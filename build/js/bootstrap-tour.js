@@ -29,6 +29,7 @@
         storage: window.localStorage,
         debug: false,
         backdrop: false,
+	      noScroll: false,
         redirect: true,
         orphan: false,
         duration: false,
@@ -87,6 +88,7 @@
           animation: true,
           container: this._options.container,
           backdrop: this._options.backdrop,
+          noScroll: this._options.noScroll,
           redirect: this._options.redirect,
           orphan: this._options.orphan,
           duration: this._options.duration,
@@ -132,10 +134,10 @@
       if (!this._inited) {
         this.init(force);
       }
-      if (this._current === null) {
+      //if (this._current === null) {
         promise = this._makePromise(this._options.onStart != null ? this._options.onStart(this) : void 0);
         this._callOnPromiseDone(promise, this.showStep, 0);
-      }
+      //}
       return this;
     };
 
@@ -304,7 +306,7 @@
           if (step.backdrop) {
             _this._showBackdrop(!_this._isOrphan(step) ? step.element : void 0);
           }
-          _this._scrollIntoView(step.element, function() {
+          _this._scrollIntoView(step, function() {
             if ((step.element != null) && step.backdrop) {
               _this._showOverlayElement(step.element);
             }
@@ -538,10 +540,11 @@
       return $tip.find(".arrow").css(position, delta ? 50 * (1 - delta / dimension) + "%" : "");
     };
 
-    Tour.prototype._scrollIntoView = function(element, callback) {
+    Tour.prototype._scrollIntoView = function(step, callback) {
+      var element = step.element;
       var $element, $window, counter, offsetTop, scrollTop, windowHeight;
       $element = $(element);
-      if (!$element.length) {
+      if (!$element.length || step.noScroll) {
         return callback();
       }
       $window = $(window);
